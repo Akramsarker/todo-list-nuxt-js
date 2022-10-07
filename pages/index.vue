@@ -2,22 +2,38 @@
   <div class="page-container">
     <div class="container">
       <h1 class="title">Add favorite Book</h1>
-      <!-- MOVIE INPUT FORM -->
-      <form class="form">
+      <form class="form" @submit.prevent>
         <div class="form-group">
-          <label for="movie-name">Book</label>
-          <input id="movie-name" type="text" placeholder="Book name" />
+          <label for="book">Book</label>
+          <input
+            id="book"
+            v-modal="bookName"
+            type="text"
+            placeholder="Book name"
+          />
         </div>
         <div class="form-group">
           <label for="author">Author</label>
-          <input id="author" type="text" placeholder="Author name" />
+          <input
+            id="author"
+            v-modal="authorName"
+            type="text"
+            placeholder="Author name"
+          />
         </div>
         <div class="form-group">
           <label for="released">Released</label>
-          <input id="released" type="text" placeholder="Released date" />
+          <input
+            id="released"
+            v-modal="released"
+            type="text"
+            placeholder="Released date"
+          />
         </div>
         <div>
-          <input class="btn" type="submit" value="Add In Your List" />
+          <button class="btn" @click.prevent="postItem">
+            {{ isPostItem ? 'Adding New List...' : 'Add In Your List' }}
+          </button>
         </div>
       </form>
 
@@ -27,17 +43,49 @@
             <th>Book</th>
             <th>Author</th>
             <th>Released</th>
-            <th>x</th>
+            <th>Update</th>
+            <th>Delete</th>
           </tr>
+          <p v-if="loadingScreener">Loading Book list...</p>
           <tr
             v-for="allTodoList in allTodoLists"
+            v-else
             :key="allTodoList.id"
             class="org-item"
           >
             <td>{{ allTodoList.bookName }}</td>
             <td>{{ allTodoList.author }}</td>
             <td>{{ allTodoList.released }}</td>
-            <td>x</td>
+            <td>
+              <button class="custom-style" @click="updateItem(allTodoList.id)">
+                <svg
+                  width="14"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  fill="#1b8fb4"
+                >
+                  <path
+                    d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"
+                  />
+                </svg>
+              </button>
+            </td>
+            <td>
+              <button class="custom-style" @click="deleteItem(allTodoList.id)">
+                <p v-if="loadingScreener">Deleting...</p>
+                <svg
+                  v-else
+                  width="14"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 448 512"
+                  fill="#1b8fb4"
+                >
+                  <path
+                    d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"
+                  />
+                </svg>
+              </button>
+            </td>
           </tr>
         </table>
       </div>
@@ -49,20 +97,69 @@
 export default {
   data() {
     return {
+      bookName: 'English for Today',
+      authorName: 'Akram',
+      isPostItem: false,
+      loadingScreener: false,
+      released: 2020,
       allTodoLists: [],
     }
   },
-  mounted() {
+  fetch() {
     this.fetchAllData()
   },
+
   methods: {
     async fetchAllData() {
       try {
+        this.loadingScreener = true
         const { data } = await this.$axios.get('http://localhost:3001/todo/all')
         this.allTodoLists = data.todos
         console.log(data)
       } catch (error) {
         alert(error)
+      } finally {
+        this.loadingScreener = false
+      }
+    },
+
+    async postItem() {
+      try {
+        this.isPostItem = true
+        const { data } = await this.$axios.post('http://localhost:3001/todo', {
+          bookName: this.bookName,
+          author: this.authorName,
+          released: this.released,
+        })
+        this.allTodoLists.push({
+          bookName: this.bookName,
+          author: this.authorName,
+          released: this.released,
+        })
+        console.log(data)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isPostItem = false
+      }
+    },
+
+    async updateItem(id) {
+      await this.$axios.put(`http://localhost:3001/todo/${id}`)
+      console.log(id)
+    },
+
+    async deleteItem(id) {
+      try {
+        this.loadingScreener = true
+        const { data } = await this.$axios.delete(
+          `http://localhost:3001/todo/${id}`
+        )
+        console.log(data)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        this.loadingScreener = false
       }
     },
   },
@@ -99,17 +196,6 @@ export default {
   }
 
   .form-group input {
-    // width: 100%;
-    // border-radius: 5px;
-    // border: 2px solid rgb(216, 215, 216);
-    // background-color: #f0eeef;
-    // padding: 0.5rem;
-    // height: 3rem;
-    // margin-bottom: 1rem;
-    // outline: none;
-    // font-size: 1.2rem;
-    // color: #163055;
-    // padding: 0.5rem 0.75rem;
     border-radius: 0.35rem;
     box-shadow: none;
     border: 1.5px solid rgba(rgba(0, 75, 99, 1), 0.5);
@@ -199,14 +285,14 @@ export default {
       background: $color-primary;
       border-top: 1px solid #abeaff;
     }
-    .chat-btn {
+    .custom-style {
       display: flex;
       justify-content: end;
     }
-    .chat-icon {
-      display: flex;
-      justify-content: end;
-      margin-right: 1rem;
+    .custom-style {
+      background: none;
+      border: none;
+      cursor: pointer;
     }
   }
   .table-box td,
