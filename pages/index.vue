@@ -57,7 +57,10 @@
             <td>{{ allTodoList.author }}</td>
             <td>{{ allTodoList.released }}</td>
             <td>
-              <button class="custom-style" @click="updateItem(allTodoList.id)">
+              <button
+                class="custom-style"
+                @click="updateItem(allTodoList.id, allTodoList)"
+              >
                 <svg
                   width="14"
                   xmlns="http://www.w3.org/2000/svg"
@@ -72,9 +75,7 @@
             </td>
             <td>
               <button class="custom-style" @click="deleteItem(allTodoList.id)">
-                <p v-if="loadingScreener">Deleting...</p>
                 <svg
-                  v-else
                   width="14"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 448 512"
@@ -144,22 +145,36 @@ export default {
       }
     },
 
-    async updateItem(id) {
-      await this.$axios.put(`http://localhost:3001/todo/${id}`)
+    async updateItem(id, allTodoList) {
+      try {
+        await this.$axios.put(`http://localhost:3001/todo/${id}`, {
+          bookName: this.bookName,
+          author: this.authorName,
+          released: this.released,
+        })
+        this.bookName = allTodoList.bookName
+        this.authorName = allTodoList.author
+        this.released = allTodoList.released
+      } catch (err) {
+        console.log(err)
+      }
       console.log(id)
     },
 
     async deleteItem(id) {
       try {
-        this.loadingScreener = true
-        const { data } = await this.$axios.delete(
-          `http://localhost:3001/todo/${id}`
-        )
-        console.log(data)
+        if (confirm('Are You Sure?')) {
+          await this.$axios.delete(`http://localhost:3001/todo/${id}`)
+          // Delete Object From Array On Way
+          const item = this.allTodoLists.filter((el) => el.id !== id)
+          this.allTodoLists = item
+
+          // Delete Object From Array On Other Way
+          // const index = this.allTodoLists.map((item) => item.id).indexOf(id) // find index
+          // this.allTodoLists.splice(index, 1)
+        }
       } catch (err) {
         console.log(err)
-      } finally {
-        this.loadingScreener = false
       }
     },
   },
