@@ -7,7 +7,7 @@
           <label for="book">Book</label>
           <input
             id="book"
-            v-modal="bookName"
+            v-model="bookName"
             type="text"
             placeholder="Book name"
           />
@@ -16,7 +16,7 @@
           <label for="author">Author</label>
           <input
             id="author"
-            v-modal="authorName"
+            v-model="authorName"
             type="text"
             placeholder="Author name"
           />
@@ -25,13 +25,17 @@
           <label for="released">Released</label>
           <input
             id="released"
-            v-modal="released"
+            v-model="released"
             type="text"
             placeholder="Released date"
           />
         </div>
         <div>
-          <button class="btn" @click.prevent="postItem">
+          <button
+            class="btn"
+            :disabled="!bookName || !authorName || !released"
+            @click.prevent="postItem"
+          >
             {{ isPostItem ? 'Adding New List...' : 'Add In Your List' }}
           </button>
         </div>
@@ -98,11 +102,11 @@
 export default {
   data() {
     return {
-      bookName: 'English for Today',
-      authorName: 'Akram',
+      bookName: '',
+      authorName: '',
+      released: '',
       isPostItem: false,
       loadingScreener: false,
-      released: 2020,
       allTodoLists: [],
     }
   },
@@ -116,7 +120,7 @@ export default {
         this.loadingScreener = true
         const { data } = await this.$axios.get('http://localhost:3001/todo/all')
         this.allTodoLists = data.todos
-        console.log(data)
+        // console.log(data)
       } catch (error) {
         alert(error)
       } finally {
@@ -137,6 +141,9 @@ export default {
           author: this.authorName,
           released: this.released,
         })
+        this.bookName = ''
+        this.authorName = ''
+        this.released = ''
         console.log(data)
       } catch (error) {
         console.log(error)
@@ -257,7 +264,8 @@ export default {
     }
 
     &:disabled {
-      background: #bae4f2;
+      background: rgba(14, 107, 137, 0.6);
+      cursor: unset;
     }
   }
 
