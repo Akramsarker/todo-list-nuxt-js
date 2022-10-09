@@ -125,7 +125,9 @@ export default {
     async fetchAllData() {
       try {
         this.loadingScreener = true
-        const { data } = await this.$axios.get('http://localhost:5000/todo/all')
+        const { data } = await this.$axios.get(
+          'https://zany-rose-alligator-yoke.cyclic.app/todo/all'
+        )
         this.allTodoLists = data.todos
         // console.log(data)
       } catch (error) {
@@ -138,11 +140,14 @@ export default {
     async postItem() {
       try {
         this.isPostItem = true
-        const { data } = await this.$axios.post('http://localhost:5000/todo', {
-          bookName: this.bookName,
-          author: this.authorName,
-          released: this.released,
-        })
+        const { data } = await this.$axios.post(
+          'https://zany-rose-alligator-yoke.cyclic.app/todo',
+          {
+            bookName: this.bookName,
+            author: this.authorName,
+            released: this.released,
+          }
+        )
         this.allTodoLists.push({
           bookName: this.bookName,
           author: this.authorName,
@@ -171,7 +176,7 @@ export default {
       try {
         this.isUpdatingTodo = true
         const { data } = await this.$axios.put(
-          `http://localhost:5000/todo/${this.selectedIndex}`,
+          `https://zany-rose-alligator-yoke.cyclic.app/todo/${this.selectedIndex}`,
           {
             bookName: this.bookName,
             author: this.authorName,
@@ -195,7 +200,9 @@ export default {
     async deleteItem(id) {
       try {
         if (confirm('Are You Sure?')) {
-          await this.$axios.delete(`http://localhost:5000/todo/${id}`)
+          await this.$axios.delete(
+            `https://zany-rose-alligator-yoke.cyclic.app/todo/${id}`
+          )
           // Delete Object From Array On Way
           const item = this.allTodoLists.filter((el) => el.id !== id)
           this.allTodoLists = item
