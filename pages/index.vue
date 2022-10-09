@@ -205,7 +205,7 @@ export default {
       try {
         this.$swal({
           title: 'Are you sure?',
-          text: "You won't be able to revert this!",
+          text: 'Do you want to delete the content?',
           type: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#1b8fb4',
@@ -224,7 +224,7 @@ export default {
             // Delete Object From Array On Other Way
             // const index = this.allTodoLists.map((item) => item.id).indexOf(id) // find index
             // this.allTodoLists.splice(index, 1)
-            this.$swal('Deleted!', 'Your file has been deleted.', 'success')
+            this.$swal('Deleted!', 'Your List has been deleted.', 'success')
           }
         })
       } catch (err) {
