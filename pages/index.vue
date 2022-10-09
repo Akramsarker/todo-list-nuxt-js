@@ -103,6 +103,8 @@
 </template>
 
 <script>
+// const swal = require('sweetalert2')
+
 export default {
   data() {
     return {
@@ -153,6 +155,7 @@ export default {
           author: this.authorName,
           released: this.released,
         })
+        this.$swal('Good job!', 'Added New Todo List', 'success')
         this.bookName = ''
         this.authorName = ''
         this.released = ''
@@ -183,6 +186,7 @@ export default {
             released: this.released,
           }
         )
+        this.$swal('Good job!', 'Updated Todo List', 'success')
         this.bookName = ''
         this.authorName = ''
         this.released = ''
@@ -197,20 +201,32 @@ export default {
       }
     },
 
-    async deleteItem(id) {
+    deleteItem(id) {
       try {
-        if (confirm('Are You Sure?')) {
-          await this.$axios.delete(
-            `https://zany-rose-alligator-yoke.cyclic.app/todo/${id}`
-          )
-          // Delete Object From Array On Way
-          const item = this.allTodoLists.filter((el) => el.id !== id)
-          this.allTodoLists = item
+        this.$swal({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#1b8fb4',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!',
+        }).then(async (result) => {
+          if (result) {
+            await this.$axios.delete(
+              `https://zany-rose-alligator-yoke.cyclic.app/todo/${id}`
+            )
 
-          // Delete Object From Array On Other Way
-          // const index = this.allTodoLists.map((item) => item.id).indexOf(id) // find index
-          // this.allTodoLists.splice(index, 1)
-        }
+            // Delete Object From Array On Way
+            const item = this.allTodoLists.filter((el) => el.id !== id)
+            this.allTodoLists = item
+
+            // Delete Object From Array On Other Way
+            // const index = this.allTodoLists.map((item) => item.id).indexOf(id) // find index
+            // this.allTodoLists.splice(index, 1)
+            this.$swal('Deleted!', 'Your file has been deleted.', 'success')
+          }
+        })
       } catch (err) {
         console.log(err)
       }
@@ -298,29 +314,6 @@ export default {
       background: rgba(14, 107, 137, 0.6);
       cursor: unset;
     }
-  }
-
-  /* MESSAGE COLOR */
-  .success,
-  .error {
-    color: #fff;
-    padding: 10px;
-    margin: -7px 0 20px 0;
-    border-radius: 5px;
-  }
-
-  .success {
-    background-color: green;
-  }
-
-  .error {
-    background-color: red;
-  }
-  /* CREATOR */
-  .creator {
-    font-size: 0.7rem;
-    text-align: center;
-    color: #7f8b9c;
   }
 }
 

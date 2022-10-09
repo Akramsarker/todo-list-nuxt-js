@@ -20,6 +20,7 @@
     "firebase": "^8.9.1",
     "nuxt": "^2.15.8",
     "uuid": "^8.3.2",
+    "vue-sweetalert": "^0.1.18",
     "yarn": "^1.22.11"
   },
   "devDependencies": {
