@@ -32,11 +32,15 @@
         </div>
         <div>
           <button
+            v-if="!isEditing"
             class="btn"
             :disabled="!bookName || !authorName || !released"
             @click.prevent="postItem"
           >
             {{ isPostItem ? 'Adding New List...' : 'Add In Your List' }}
+          </button>
+          <button v-else class="btn" @click.prevent="updateTodoItem">
+            {{ isUpdatingTodo ? 'Updating Todo...' : 'Update Todo' }}
           </button>
         </div>
       </form>
@@ -106,7 +110,10 @@ export default {
       authorName: '',
       released: '',
       isPostItem: false,
+      isUpdatingTodo: false,
+      isEditing: false,
       loadingScreener: false,
+      selectedIndex: null,
       allTodoLists: [],
     }
   },
@@ -118,7 +125,7 @@ export default {
     async fetchAllData() {
       try {
         this.loadingScreener = true
-        const { data } = await this.$axios.get('http://localhost:3001/todo/all')
+        const { data } = await this.$axios.get('http://localhost:5000/todo/all')
         this.allTodoLists = data.todos
         // console.log(data)
       } catch (error) {
@@ -131,7 +138,7 @@ export default {
     async postItem() {
       try {
         this.isPostItem = true
-        const { data } = await this.$axios.post('http://localhost:3001/todo', {
+        const { data } = await this.$axios.post('http://localhost:5000/todo', {
           bookName: this.bookName,
           author: this.authorName,
           released: this.released,
@@ -152,26 +159,43 @@ export default {
       }
     },
 
-    async updateItem(id, allTodoList) {
+    updateItem(id, allTodoList) {
+      this.bookName = allTodoList.bookName
+      this.authorName = allTodoList.author
+      this.released = allTodoList.released
+      this.selectedIndex = id
+      this.isEditing = true
+    },
+
+    async updateTodoItem() {
       try {
-        await this.$axios.put(`http://localhost:3001/todo/${id}`, {
-          bookName: this.bookName,
-          author: this.authorName,
-          released: this.released,
-        })
-        this.bookName = allTodoList.bookName
-        this.authorName = allTodoList.author
-        this.released = allTodoList.released
+        this.isUpdatingTodo = true
+        const { data } = await this.$axios.put(
+          `http://localhost:5000/todo/${this.selectedIndex}`,
+          {
+            bookName: this.bookName,
+            author: this.authorName,
+            released: this.released,
+          }
+        )
+        this.bookName = ''
+        this.authorName = ''
+        this.released = ''
+        if (data.success === true) {
+          this.fetchAllData()
+        }
       } catch (err) {
         console.log(err)
+      } finally {
+        this.isEditing = false
+        this.isUpdatingTodo = false
       }
-      console.log(id)
     },
 
     async deleteItem(id) {
       try {
         if (confirm('Are You Sure?')) {
-          await this.$axios.delete(`http://localhost:3001/todo/${id}`)
+          await this.$axios.delete(`http://localhost:5000/todo/${id}`)
           // Delete Object From Array On Way
           const item = this.allTodoLists.filter((el) => el.id !== id)
           this.allTodoLists = item
