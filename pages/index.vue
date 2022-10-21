@@ -139,6 +139,7 @@ export default {
       }
     },
 
+    // Post Api
     async postItem() {
       try {
         this.isPostItem = true
@@ -175,6 +176,7 @@ export default {
       this.isEditing = true
     },
 
+    // Update  Api
     async updateTodoItem() {
       try {
         this.isUpdatingTodo = true
@@ -201,6 +203,7 @@ export default {
       }
     },
 
+// Delete Api
     deleteItem(id) {
       try {
         this.$swal({
