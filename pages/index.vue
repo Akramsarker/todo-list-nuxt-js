@@ -206,6 +206,8 @@ export default {
 // Delete Api
     deleteItem(id) {
       try {
+
+        // Add sweet alert lifeberry
         this.$swal({
           title: 'Are you sure?',
           text: 'Do you want to delete the content?',
