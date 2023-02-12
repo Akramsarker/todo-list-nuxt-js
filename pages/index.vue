@@ -37,10 +37,10 @@
             :disabled="!bookName || !authorName || !released"
             @click.prevent="postItem"
           >
-            {{ isPostItem ? 'Adding New List...' : 'Add In Your List' }}
+            {{ isPostItem ? "Adding New List..." : "Add In Your List" }}
           </button>
           <button v-else class="btn" @click.prevent="updateTodoItem">
-            {{ isUpdatingTodo ? 'Updating Todo...' : 'Update Todo' }}
+            {{ isUpdatingTodo ? "Updating Todo..." : "Update Todo" }}
           </button>
         </div>
       </form>
@@ -108,78 +108,78 @@
 export default {
   data() {
     return {
-      bookName: '',
-      authorName: '',
-      released: '',
+      bookName: "",
+      authorName: "",
+      released: "",
       isPostItem: false,
       isUpdatingTodo: false,
       isEditing: false,
       loadingScreener: false,
       selectedIndex: null,
       allTodoLists: [],
-    }
+    };
   },
   fetch() {
-    this.fetchAllData()
+    this.fetchAllData();
   },
 
   methods: {
     async fetchAllData() {
       try {
-        this.loadingScreener = true
+        this.loadingScreener = true;
         const { data } = await this.$axios.get(
-          'https://zany-rose-alligator-yoke.cyclic.app/todo/all'
-        )
-        this.allTodoLists = data.todos
+          "https://zany-rose-alligator-yoke.cyclic.app/todo/all"
+        );
+        this.allTodoLists = data.todos;
         // console.log(data)
       } catch (error) {
-        alert(error)
+        alert(error);
       } finally {
-        this.loadingScreener = false
+        this.loadingScreener = false;
       }
     },
 
     // Post Api
     async postItem() {
       try {
-        this.isPostItem = true
+        this.isPostItem = true;
         const { data } = await this.$axios.post(
-          'https://zany-rose-alligator-yoke.cyclic.app/todo',
+          "https://zany-rose-alligator-yoke.cyclic.app/todo",
           {
             bookName: this.bookName,
             author: this.authorName,
             released: this.released,
           }
-        )
+        );
         this.allTodoLists.push({
           bookName: this.bookName,
           author: this.authorName,
           released: this.released,
-        })
-        this.$swal('Good job!', 'Added New Todo List', 'success')
-        this.bookName = ''
-        this.authorName = ''
-        this.released = ''
-        console.log(data)
+        });
+        this.$swal("Good job!", "Added New Todo List", "success");
+        this.bookName = "";
+        this.authorName = "";
+        this.released = "";
+        console.log(data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       } finally {
-        this.isPostItem = false
+        this.isPostItem = false;
       }
     },
 
     updateItem(id, allTodoList) {
-      this.bookName = allTodoList.bookName
-      this.authorName = allTodoList.author
-      this.released = allTodoList.released
-      this.selectedIndex = id
-      this.isEditing = true
+      this.bookName = allTodoList.bookName;
+      this.authorName = allTodoList.author;
+      this.released = allTodoList.released;
+      this.selectedIndex = id;
+      this.isEditing = true;
     },
 
     // Update  Api
     async updateTodoItem() {
       try {
-        this.isUpdatingTodo = true
+        this.isUpdatingTodo = true;
         const { data } = await this.$axios.put(
           `https://zany-rose-alligator-yoke.cyclic.app/todo/${this.selectedIndex}`,
           {
@@ -187,57 +187,54 @@ export default {
             author: this.authorName,
             released: this.released,
           }
-        )
-        this.$swal('Good job!', 'Updated Todo List', 'success')
-        this.bookName = ''
-        this.authorName = ''
-        this.released = ''
+        );
+        this.$swal("Good job!", "Updated Todo List", "success");
+        this.bookName = "";
+        this.authorName = "";
+        this.released = "";
         if (data.success === true) {
-          this.fetchAllData()
+          this.fetchAllData();
         }
       } catch (err) {
-        console.log(err)
+        console.log(err);
       } finally {
-        this.isEditing = false
-        this.isUpdatingTodo = false
+        this.isEditing = false;
+        this.isUpdatingTodo = false;
       }
     },
 
-// Delete Api
+    // Delete Api
     deleteItem(id) {
       try {
-
         // Add sweet alert lifeberry
         this.$swal({
-          title: 'Are you sure?',
-          text: 'Do you want to delete the content?',
-          type: 'warning',
+          title: "Are you sure?",
+          text: "Do you want to delete the content?",
+          type: "warning",
           showCancelButton: true,
-          confirmButtonColor: '#1b8fb4',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, delete it!',
+          confirmButtonColor: "#1b8fb4",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!",
         }).then(async (result) => {
           if (result) {
             await this.$axios.delete(
               `https://zany-rose-alligator-yoke.cyclic.app/todo/${id}`
-            )
-
+            );
             // Delete Object From Array On Way
-            const item = this.allTodoLists.filter((el) => el.id !== id)
-            this.allTodoLists = item
-
+            const item = this.allTodoLists.filter((el) => el.id !== id);
+            this.allTodoLists = item;
             // Delete Object From Array On Other Way
             // const index = this.allTodoLists.map((item) => item.id).indexOf(id) // find index
             // this.allTodoLists.splice(index, 1)
-            this.$swal('Deleted!', 'Your List has been deleted.', 'success')
+            this.$swal("Deleted!", "Your List has been deleted.", "success");
           }
-        })
+        });
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
